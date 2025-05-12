@@ -53,6 +53,48 @@ export async function uploadFile(
 }
 
 /**
+ * Ta bort en fil från Supabase Storage
+ * @param path Sökvägen till filen som ska tas bort
+ * @param bucket Bucket-namnet där filen finns (standard: 'handbooks')
+ */
+export async function deleteFile(path: string, bucket: string = 'handbooks'): Promise<void> {
+  try {
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove([path]);
+
+    if (error) {
+      throw new Error(`Fel vid borttagning av fil: ${error.message}`);
+    }
+  } catch (error) {
+    console.error('Fel vid borttagning av fil:', error);
+    throw error;
+  }
+}
+
+/**
+ * Hämta en lista med filer från Supabase Storage
+ * @param prefix Sökvägsprefixet för att filtrera filer (t.ex. 'logos/')
+ * @param bucket Bucket-namnet (standard: 'handbooks')
+ */
+export async function listFiles(prefix?: string, bucket: string = 'handbooks') {
+  try {
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .list(prefix || '');
+
+    if (error) {
+      throw new Error(`Fel vid listning av filer: ${error.message}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Fel vid listning av filer:', error);
+    throw error;
+  }
+}
+
+/**
  * Spara handbok-data i databasen
  * @param handbookData Handbok-data som ska sparas
  * @returns Promise med den sparade handboken
@@ -125,6 +167,55 @@ export async function getHandbook(id: string) {
     return data;
   } catch (error) {
     console.error('Fel vid hämtning av handbok:', error);
+    throw error;
+  }
+}
+
+/**
+ * Uppdatera en handbok
+ * @param id Handbokens ID
+ * @param handbookData Data som ska uppdateras
+ */
+export async function updateHandbook(id: string, handbookData: Partial<any>) {
+  try {
+    const { data, error } = await supabase
+      .from('handbooks')
+      .update(handbookData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Fel vid uppdatering av handbok: ${error.message}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Fel vid uppdatering av handbok:', error);
+    throw error;
+  }
+}
+
+/**
+ * Lista alla handböcker
+ * @param limit Antal handböcker att hämta
+ * @param offset Startposition för pagineringen
+ */
+export async function listHandbooks(limit: number = 10, offset: number = 0) {
+  try {
+    const { data, error, count } = await supabase
+      .from('handbooks')
+      .select('*', { count: 'exact' })
+      .range(offset, offset + limit - 1)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(`Fel vid hämtning av handböcker: ${error.message}`);
+    }
+
+    return { data, count };
+  } catch (error) {
+    console.error('Fel vid hämtning av handböcker:', error);
     throw error;
   }
 }

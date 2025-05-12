@@ -27,6 +27,7 @@ export default function RootLayout({
     <html lang="sv">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        data-inject-vt-svd="true"
       >
         {children}
         <Toaster position="top-center" richColors />

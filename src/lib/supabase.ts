@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import config from './config';
+import { Database, Handbook } from '@/types/database';
 
 // Typning för lagring av filer
 export interface FileUploadResult {
@@ -8,7 +9,7 @@ export interface FileUploadResult {
 }
 
 // Skapa Supabase-klienten med URL och anonym nyckel från konfigurationen
-const supabase = createClient(
+const supabase = createClient<Database>(
   config.supabaseUrl,
   config.supabaseAnonKey
 );
@@ -99,7 +100,7 @@ export async function listFiles(prefix?: string, bucket: string = 'handbooks') {
  * @param handbookData Handbok-data som ska sparas
  * @returns Promise med den sparade handboken
  */
-export async function saveHandbook(handbookData: any) {
+export async function saveHandbook(handbookData: Omit<Handbook, 'id' | 'created_at' | 'updated_at' | 'version'>) {
   try {
     const { data, error } = await supabase
       .from('handbooks')
@@ -176,7 +177,7 @@ export async function getHandbook(id: string) {
  * @param id Handbokens ID
  * @param handbookData Data som ska uppdateras
  */
-export async function updateHandbook(id: string, handbookData: Partial<any>) {
+export async function updateHandbook(id: string, handbookData: Partial<Omit<Handbook, 'id' | 'created_at' | 'updated_at' | 'version'>>) {
   try {
     const { data, error } = await supabase
       .from('handbooks')

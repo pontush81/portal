@@ -8,9 +8,30 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { Handbook } from '@/types/database';
+
+// Type for form data
+type HandbookFormData = {
+  association_name: string;
+  association_type: string;
+  address: string;
+  zip_code: string;
+  city: string;
+  contact_email: string;
+  contact_phone: string;
+  contact_person: string;
+  selected_sections: string[];
+  custom_information: string;
+  customer_email: string;
+  logo_url: string | null;
+  pdf_url: string | null;
+  site_url: string | null;
+  payment_status: 'pending' | 'processing' | 'completed' | 'failed';
+  payment_id: string | null;
+};
 
 // Föreningen testdata
-const testAssociationData = {
+const testAssociationData: HandbookFormData = {
   association_name: 'Testförening',
   association_type: 'brf',
   address: 'Testgatan 123',
@@ -22,12 +43,17 @@ const testAssociationData = {
   selected_sections: ['intro', 'members', 'rules'],
   custom_information: 'Detta är en testförening.',
   customer_email: 'kund@example.com',
+  logo_url: null,
+  pdf_url: null,
+  site_url: null,
+  payment_status: 'pending',
+  payment_id: null
 };
 
 export default function TestDatabasePage() {
-  const [handbooks, setHandbooks] = useState<any[]>([]);
+  const [handbooks, setHandbooks] = useState<Handbook[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState(testAssociationData);
+  const [formData, setFormData] = useState<HandbookFormData>(testAssociationData);
   const [selectedHandbookId, setSelectedHandbookId] = useState<string | null>(null);
 
   // Hämta handböcker när sidan laddas
@@ -116,6 +142,11 @@ export default function TestDatabasePage() {
         selected_sections: handbook.selected_sections || [],
         custom_information: handbook.custom_information || '',
         customer_email: handbook.customer_email,
+        logo_url: handbook.logo_url,
+        pdf_url: handbook.pdf_url,
+        site_url: handbook.site_url,
+        payment_status: handbook.payment_status,
+        payment_id: handbook.payment_id
       });
       setSelectedHandbookId(id);
       toast.info('Handbok vald för redigering');

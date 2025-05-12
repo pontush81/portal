@@ -11,8 +11,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
+// Define proper type for storage files
+interface StorageFile {
+  name: string;
+  metadata?: {
+    size?: number;
+  };
+  created_at?: string;
+}
+
 export default function TestStoragePage() {
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<StorageFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
